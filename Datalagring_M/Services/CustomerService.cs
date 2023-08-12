@@ -7,12 +7,7 @@ namespace Datalagring_M.Services;
 
 internal class CustomerService
 {
-    private readonly DataContext _context;
-
-    public CustomerService(DataContext context)
-    {
-        _context = context;
-    }
+    private static DataContext _context = new DataContext();
 
     public async Task SaveAsync(CustomerEntity customerEntity, IncidentEntity incidentEntity)
     {
@@ -75,11 +70,12 @@ internal class CustomerService
 
     public async Task DeleteAsync(string email)
     {
-        var customer = await _context.Customers.Include(x => x.FirstName).FirstOrDefaultAsync(x => x.Email == email);
+        var customer = await _context.Customers.FirstOrDefaultAsync(x => x.Email == email);
         if (customer != null)
         {
-            _context.Remove(customer);
+            _context.Customers.Remove(customer);
             await _context.SaveChangesAsync();
         }
     }
+
 }

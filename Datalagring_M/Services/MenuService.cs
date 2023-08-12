@@ -1,25 +1,29 @@
 ﻿
 using Datalagring_M.Contexts;
 using Datalagring_M.Models.Entities;
+using Datalagring_M.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Datalagring_M.Services;
 
 internal class MenuService
 {
-    private readonly DataContext _context;
+    
     private readonly CustomerService _customerService;
 
-    public MenuService(CustomerService customerService, DataContext context)
+
+    public MenuService(CustomerService customerService)
     {
         _customerService = customerService;
-        _context = context;
+        
     }
 
     public async Task CreateAsync()
     {
         var customerEntity = new CustomerEntity();
 
+        Console.WriteLine("Fyll i information för ärendet:");
+        Console.WriteLine(" -------------------------------");
         Console.Write("Förnamn: ");
         customerEntity.FirstName = Console.ReadLine() ?? "";
 
@@ -29,18 +33,21 @@ internal class MenuService
         Console.Write("E-postadress: ");
         customerEntity.Email = Console.ReadLine() ?? "";
 
-        Console.WriteLine("Fyll i information för ärendet:");
+        Console.WriteLine(" -------------------------------");
+
+        Console.Write("Anläggning: ");
+        var Facility = Console.ReadLine() ?? "";
+
         Console.Write("Beskrivning: ");
         var Description = Console.ReadLine() ?? "";
-
-        Console.Write("Status: ");
-        var Status = Console.ReadLine() ?? "";
 
         Console.Write("Kommentar: ");
         var Comment = Console.ReadLine() ?? "";
 
-        Console.Write("Anläggning: ");
-        var Facility = Console.ReadLine() ?? "";
+        Console.Write("Status - pågående/I kö/avslutat: ");
+        var Status = Console.ReadLine() ?? "";
+
+
 
         var incidentEntity = new IncidentEntity
         {
@@ -56,7 +63,58 @@ internal class MenuService
         await _customerService.SaveAsync(customerEntity, incidentEntity);
     }
 
+    // I din MenuService-klass
 
+    public async Task AddIncidentToCustomerAsync()
+    {
+        Console.Write("Ange e-postadress på kunden: ");
+        var email = Console.ReadLine();
+
+        if (string.IsNullOrEmpty(email))
+        {
+            Console.WriteLine($"Ingen e-postadress angiven.");
+            return;
+        }
+
+        // Hämta befintlig kund från databasen
+        var existingCustomer = await _customerService.GetAsync(email);
+
+        if (existingCustomer != null)
+        {
+            Console.WriteLine("Fyll i information för ärendet:");
+            Console.Write("Beskrivning: ");
+            var description = Console.ReadLine() ?? "";
+
+            Console.Write("Status: ");
+            var status = Console.ReadLine() ?? "";
+
+            Console.Write("Kommentar: ");
+            var comment = Console.ReadLine() ?? "";
+
+            Console.Write("Anläggning: ");
+            var facility = Console.ReadLine() ?? "";
+
+            var newIncident = new IncidentEntity
+            {
+                Description = description,
+                Status = status,
+                Comment = comment,
+                Facility = facility
+            };
+
+            // Lägg till den nya incidenten till kundens incidentlista
+            existingCustomer.Incidents.Add(newIncident);
+
+            // Uppdatera kundobjektet i databasen med den nya incidenten
+            await _customerService.UpdateAsync(existingCustomer);
+
+            Console.WriteLine("Ny incident har lagts till för kunden.");
+        }
+        else
+        {
+            Console.WriteLine($"Ingen kund med den angivna e-postadressen hittades.");
+        }
+    }
 
 
 
@@ -68,18 +126,25 @@ internal class MenuService
         {
             foreach (var customer in customers)
             {
-                Console.WriteLine($"Kundnummer: {customer.Id}");
+                Console.WriteLine("");
+                Console.WriteLine("--------------------------");
+                Console.WriteLine("");
+                Console.WriteLine("Kundinformation:");
+                Console.WriteLine("");
+                Console.WriteLine($"Kund ID: {customer.Id}");
                 Console.WriteLine($"Namn: {customer.FirstName} {customer.LastName}");
                 Console.WriteLine($"E-postadress: {customer.Email}");
+                Console.WriteLine(" ");
 
                 foreach (var incident in customer.Incidents)
                 {
-                    Console.WriteLine("Incidenter:");
-                    Console.WriteLine($"Incident ID: {incident.Id}");
-                    Console.WriteLine($"Beskrivning: {incident.Description}");
-                    Console.WriteLine($"Status: {incident.Status}");
-                    Console.WriteLine($"Kommentar: {incident.Comment}");
+                    Console.WriteLine("Incidentinformation:");
                     Console.WriteLine("");
+                    Console.WriteLine($"Incident ID: {incident.Id}");
+                    Console.WriteLine($"Gällande anläggning: {incident.Facility}");
+                    Console.WriteLine($"Beskrivning: {incident.Description}");
+                    Console.WriteLine($"Kommentar: {incident.Comment}");
+                    Console.WriteLine($"Status: {incident.Status}");
                 }
 
                 Console.WriteLine("");
@@ -106,22 +171,28 @@ internal class MenuService
             return;
         }
 
-        // Hämta specifik kund och incidenter från databasen
         var customer = await _customerService.GetAsync(email);
 
         if (customer != null)
         {
-            Console.WriteLine($"Kundnummer: {customer.Id}");
+            Console.WriteLine("Kundinformation:");
+            Console.WriteLine("--------------------");
+            Console.WriteLine($"Kund ID: {customer.Id}");
             Console.WriteLine($"Namn: {customer.FirstName} {customer.LastName}");
             Console.WriteLine($"E-postadress: {customer.Email}");
+            
 
             if (customer.Incidents.Any())
             {
-                Console.WriteLine("Incidenter:");
+                Console.WriteLine(" ");
+                Console.WriteLine("Incidentinformation:");
+                Console.WriteLine("--------------------");
                 foreach (var incident in customer.Incidents)
                 {
                     Console.WriteLine($"Incident ID: {incident.Id}");
+                    Console.WriteLine($"Gällande anläggning: {incident.Facility}");
                     Console.WriteLine($"Beskrivning: {incident.Description}");
+                    Console.WriteLine($"Kommentar: {incident.Comment}");
                     Console.WriteLine($"Status: {incident.Status}");
                     Console.WriteLine("");
                 }
@@ -172,7 +243,7 @@ internal class MenuService
             return;
         }
 
-        Console.Write("Ny status för incidenten: ");
+        Console.Write("Ny status för incidenten - pågående/I kö/avslutat: ");
         string newStatus = Console.ReadLine();
 
         incident.Status = newStatus;
@@ -180,7 +251,7 @@ internal class MenuService
         // Update the status of the incident in the database
         await _customerService.UpdateAsync(customer);
 
-        Console.WriteLine("Incidentens status har uppdaterats.");
+        Console.WriteLine($"Incidentens status har uppdaterats till {newStatus}.");
     }
 
 
@@ -193,8 +264,9 @@ internal class MenuService
 
         if (!string.IsNullOrEmpty(email))
         {
-            //delete specific customer from database
-            await CustomerService.DeleteAsync(email);
+          
+            await _customerService.DeleteAsync(email);
+            Console.WriteLine("Angiven kund har raderats.");
         }
         else
         {

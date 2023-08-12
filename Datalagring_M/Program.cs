@@ -1,16 +1,26 @@
 ﻿using System;
+using Datalagring_M.Contexts;
 using Datalagring_M.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
-var menu = new MenuService();
+var serviceProvider = new ServiceCollection()
+    .AddTransient<CustomerService>()
+    .AddTransient<MenuService>()
+    .AddDbContext<DataContext>(options => options.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\mikah\\OneDrive\\Documents\\database_local.mdf;Integrated Security=True;Connect Timeout=30"))
+    .BuildServiceProvider();
+
+var menu = serviceProvider.GetRequiredService<MenuService>();
 
 while (true)
 {
     Console.Clear();
     Console.WriteLine("1. Skapa en ny kund");
-    Console.WriteLine("2. Visa alla ärenden");
-    Console.WriteLine("3. Hämta ärende");
-    Console.WriteLine("4. Uppdatera status på ärende");
-    Console.WriteLine("5. Radera ");
+    Console.WriteLine("2. lägg till ärende");
+    Console.WriteLine("3. Visa alla ärenden");
+    Console.WriteLine("4. Hämta ärende");
+    Console.WriteLine("5. Uppdatera status på ärende");
+    Console.WriteLine("6. Radera ");
     Console.Write("Välj ett av följande alternativ (1-4): ");
 
     switch (Console.ReadLine())
@@ -22,20 +32,25 @@ while (true)
 
         case "2":
             Console.Clear();
-            await menu.GetAllIncidentsAsync();
+            await menu.AddIncidentToCustomerAsync();
             break;
 
         case "3":
             Console.Clear();
-            await menu.GetIncidentByEmailAsync();
+            await menu.GetAllIncidentsAsync();
             break;
 
         case "4":
             Console.Clear();
-            await menu.UpdateIncidentStatusAsync();
+            await menu.GetIncidentByEmailAsync();
             break;
 
         case "5":
+            Console.Clear();
+            await menu.UpdateIncidentStatusAsync();
+            break;
+
+        case "6":
             Console.Clear();
             await menu.DeleteAsync();
             break;
