@@ -1,21 +1,15 @@
 ﻿
-using Datalagring_M.Contexts;
 using Datalagring_M.Models.Entities;
-using Datalagring_M.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace Datalagring_M.Services;
 
 internal class MenuService
 {
-    
     private readonly CustomerService _customerService;
-
 
     public MenuService(CustomerService customerService)
     {
         _customerService = customerService;
-        
     }
 
     public async Task CreateAsync()
@@ -48,7 +42,6 @@ internal class MenuService
         var Status = Console.ReadLine() ?? "";
 
 
-
         var incidentEntity = new IncidentEntity
         {
             Description = Description,
@@ -59,11 +52,8 @@ internal class MenuService
 
         customerEntity.Incidents.Add(incidentEntity);
 
-        // Save customer and incident to the database
         await _customerService.SaveAsync(customerEntity, incidentEntity);
     }
-
-    // I din MenuService-klass
 
     public async Task AddIncidentToCustomerAsync()
     {
@@ -76,7 +66,6 @@ internal class MenuService
             return;
         }
 
-        // Hämta befintlig kund från databasen
         var existingCustomer = await _customerService.GetAsync(email);
 
         if (existingCustomer != null)
@@ -102,10 +91,8 @@ internal class MenuService
                 Facility = facility
             };
 
-            // Lägg till den nya incidenten till kundens incidentlista
             existingCustomer.Incidents.Add(newIncident);
 
-            // Uppdatera kundobjektet i databasen med den nya incidenten
             await _customerService.UpdateAsync(existingCustomer);
 
             Console.WriteLine("Ny incident har lagts till för kunden.");
@@ -115,8 +102,6 @@ internal class MenuService
             Console.WriteLine($"Ingen kund med den angivna e-postadressen hittades.");
         }
     }
-
-
 
     public async Task GetAllIncidentsAsync()
     {
@@ -156,8 +141,6 @@ internal class MenuService
             Console.WriteLine("");
         }
     }
-
-
 
 
     public async Task GetIncidentByEmailAsync()
@@ -208,7 +191,6 @@ internal class MenuService
         }
     }
 
-
     public async Task UpdateIncidentStatusAsync()
     {
         Console.Write("Ange e-postadress på kunden: ");
@@ -248,14 +230,10 @@ internal class MenuService
 
         incident.Status = newStatus;
 
-        // Update the status of the incident in the database
         await _customerService.UpdateAsync(customer);
 
         Console.WriteLine($"Incidentens status har uppdaterats till {newStatus}.");
     }
-
-
-
 
     public async Task DeleteAsync()
     {
@@ -273,7 +251,5 @@ internal class MenuService
             Console.WriteLine($"Ingen e-postadressen angiven.");
             Console.WriteLine("");
         }
-
     }
-
 }

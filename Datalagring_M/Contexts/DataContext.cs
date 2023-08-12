@@ -39,9 +39,7 @@ namespace Datalagring_M.Contexts
                 .OnDelete(DeleteBehavior.Cascade);
         }
     
-
         #endregion
-
 
         public virtual DbSet<CustomerEntity> Customers { get; set; }
         public virtual DbSet<IncidentEntity> Incidents { get; set; }

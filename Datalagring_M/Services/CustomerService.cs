@@ -1,6 +1,5 @@
 ﻿using Datalagring_M.Models.Entities;
 using Datalagring_M.Contexts;
-using Datalagring_M.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Datalagring_M.Services;
@@ -45,7 +44,6 @@ internal class CustomerService
         return customerEntity;
     }
 
-
     public async Task UpdateAsync(CustomerEntity customerEntity)
     {
         var existingCustomer = await _context.Customers
@@ -67,7 +65,6 @@ internal class CustomerService
         }
     }
 
-
     public async Task DeleteAsync(string email)
     {
         var customer = await _context.Customers.FirstOrDefaultAsync(x => x.Email == email);
@@ -77,5 +74,4 @@ internal class CustomerService
             await _context.SaveChangesAsync();
         }
     }
-
 }
