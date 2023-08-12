@@ -1,11 +1,11 @@
 # Datalagring_M
-Inlämning Datalagring
+InlÃ¤mning Datalagring
 
-Okej jag märkte att listan för alla ärenden blev lite whack efter att man hade uppdaterat ett ärende, 
-man ser både den gamla statusen och sen en till incident med den uppdaterade statusen. Man ser i alla fall den uppdaterade
+Okej jag mÃ¤rkte att listan fÃ¶r alla Ã¤renden blev lite whack efter att man hade uppdaterat ett Ã¤rende, 
+man ser bÃ¥de den gamla statusen och sen en till incident med den uppdaterade statusen. Man ser i alla fall den uppdaterade
 statusen i listan, statusen uppdateras i databasen och listan ser fine ut igen efter att man startat om konsolapplikationen 
-så jag hoppas att det duger. Jag insåg att det kanske hade hjälp att lägga till en timestamp
-men har inte tid för att joxa nu asså. 
+sÃ¥ jag hoppas att det duger. Jag insÃ¥g att det kanske hade hjÃ¤lp att lÃ¤gga till en timestamp
+men har inte tid fÃ¶r att joxa nu assÃ¥. 
 
-Hoppas att detta är tillräckligt för ett godkänt!
-Håller tummarna, ha det gött!
+Hoppas att detta Ã¤r tillrÃ¤ckligt fÃ¶r ett godkÃ¤nt!
+HÃ¥ller tummarna, ha det gÃ¶tt!
